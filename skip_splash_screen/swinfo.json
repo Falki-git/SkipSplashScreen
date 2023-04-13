@@ -2,10 +2,10 @@
   "mod_id": "skip_splash_screen",
   "author": "Falki",
   "name": "SkipSplashScreen",
-  "description": "Skips the splashscreen",
-  "source": "",
+  "description": "Skips the splashscreen and health warning",
+  "source": "https://github.com/Falki-git/SkipSplashScreen",
   "version": "1.0.0",
-  "version_check": "",
+  "version_check": "https://github.com/Falki-git/SkipSplashScreen/blob/master/skip_splash_screen/swinfo.json",
   "dependencies": [
     {
       "id":  "SpaceWarp",
