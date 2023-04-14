@@ -9,7 +9,6 @@ namespace SkipSplashScreen;
 
 [BepInPlugin(MyPluginInfo.PLUGIN_GUID, MyPluginInfo.PLUGIN_NAME, MyPluginInfo.PLUGIN_VERSION)]
 [BepInDependency(SpaceWarpPlugin.ModGuid, SpaceWarpPlugin.ModVer)]
-[HarmonyPatch(typeof(SequentialFlow))]
 public class SkipSplashScreenPlugin : BaseSpaceWarpPlugin
 {
     // These are useful in case some other mod wants to add a dependency to this one
@@ -19,7 +18,7 @@ public class SkipSplashScreenPlugin : BaseSpaceWarpPlugin
 
     public void Start()
     {
-        Harmony.CreateAndPatchAll(typeof(SkipSplashScreenPlugin).Assembly);
+        Harmony.CreateAndPatchAll(typeof(SkipSplashScreenPlugin));
     }
 
     public void Update()
@@ -31,10 +30,9 @@ public class SkipSplashScreenPlugin : BaseSpaceWarpPlugin
 
         if (GameManager.Instance.Game.GlobalGameState.GetState() == GameState.MainMenu)
             Destroy(this);
-    }    
+    }
 
-    [HarmonyPatch("AddAction")]
-    [HarmonyPrefix]
+    [HarmonyPatch(typeof(SequentialFlow), "AddAction"), HarmonyPrefix]
     private static bool SequentialFlow_AddAction(FlowAction action)
     {
         if (action.Name == "Creating Splash Screens Prefab")
