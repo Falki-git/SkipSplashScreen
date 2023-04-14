@@ -28,7 +28,7 @@ public class SkipSplashScreenPlugin : BaseSpaceWarpPlugin
         if (gameState == null)
             return;
 
-        if (GameManager.Instance?.Game?.GlobalGameState?.GetState() == GameState.MainMenu)
+        if (gameState == GameState.MainMenu)
             Destroy(this);
     }
 
