@@ -5,6 +5,7 @@ using KSP.Game.Flow;
 using KSP.Game;
 using SpaceWarp;
 using SpaceWarp.API.Mods;
+using BepInEx.Logging;
 
 namespace SkipSplashScreen;
 
@@ -16,6 +17,8 @@ public class SkipSplashScreenPlugin : BaseSpaceWarpPlugin
     [PublicAPI] public const string ModGuid = MyPluginInfo.PLUGIN_GUID;
     [PublicAPI] public const string ModName = MyPluginInfo.PLUGIN_NAME;
     [PublicAPI] public const string ModVer = MyPluginInfo.PLUGIN_VERSION;
+
+    private static ManualLogSource _logger = BepInEx.Logging.Logger.CreateLogSource("SkipSplashScreen");
 
     public void Start()
     {
@@ -30,7 +33,10 @@ public class SkipSplashScreenPlugin : BaseSpaceWarpPlugin
             return;
 
         if (gameState == GameState.MainMenu)
+        {
+            _logger.LogDebug($"disappears into oblivion...");
             Destroy(this);
+        }            
     }
 
     [HarmonyPatch(typeof(SequentialFlow), "AddAction"), HarmonyPrefix]
@@ -38,6 +44,7 @@ public class SkipSplashScreenPlugin : BaseSpaceWarpPlugin
     {
         if (action.Name == "Creating Splash Screens Prefab")
         {
+            _logger.LogDebug($"'Creating Splash Screens Prefab' action found. Skipping!");
             GameManager.Instance.HasPhotosensitivityWarningBeenShown = true;
             return false;
         }
