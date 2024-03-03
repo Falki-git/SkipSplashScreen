@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
 using JetBrains.Annotations;
@@ -22,22 +21,31 @@ public class SkipSplashScreenPlugin : BaseSpaceWarpPlugin
 
     private new static readonly ManualLogSource Logger = BepInEx.Logging.Logger.CreateLogSource("SkipSplashScreen");
 
+    private GameObject _mainMenu;
     private CampaignMenu _campaignMenuScript;
     private bool _singlePlayerMenuTriggered;
     private bool _loadInitiated;
     private bool _hasFinished;
 
     private ConfigEntry<bool> _loadLastSavedCampaign;
+    private ConfigEntry<bool> _loadIgnoreAutoSaves;
 
     public void Start()
     {
         Harmony.CreateAndPatchAll(typeof(SkipSplashScreenPlugin));
-        
+
         _loadLastSavedCampaign = Config.Bind(
             MyPluginInfo.PLUGIN_NAME,
             "Auto load last played campaign",
             false,
             "Automatically loads the last save game file after main menu is finished loading.");
+
+        _loadIgnoreAutoSaves = Config.Bind(
+            MyPluginInfo.PLUGIN_NAME,
+            "Ignore auto-saves when loading last save game",
+            false,
+            "If enabled, auto-saves are ignored when automatically loading last save game.");
+
     }
 
     public void Update()
@@ -87,9 +95,9 @@ public class SkipSplashScreenPlugin : BaseSpaceWarpPlugin
     {
         Logger.LogInfo("'Auto load last played campaign' is enabled. To turn it off go into Settings -> Mods -> Skip Splash Screen");
         
-        var mainMenu = GameObject.Find(
+        _mainMenu = GameObject.Find(
             "GameManager/Default Game Instance(Clone)/UI Manager(Clone)/Main Canvas/MainMenu(Clone)/");
-        var campaignMenu = mainMenu.GetChild("CampaignMenu");
+        var campaignMenu = _mainMenu.GetChild("CampaignMenu");
         _campaignMenuScript = campaignMenu.GetComponent<CampaignMenu>();
 
         var campaignSavesList = _campaignMenuScript.Game.SaveLoadManager.GetCampaignSaveFiles(CampaignType.SinglePlayer);
@@ -100,43 +108,39 @@ public class SkipSplashScreenPlugin : BaseSpaceWarpPlugin
 
     private void LoadLastSinglePlayerGame()
     {
-        // Wait for the CampaignEntryTiles to get created
-        if (_campaignMenuScript._campaignEntryTiles.Count == 0)
+        // Wait for all the saves to load and get displayed
+        // In 0.2.1 the first save of the first campaign is auto-selected when opening the menu
+        if (_campaignMenuScript._campaignLoadMenu.CurrentSelectedFilePath is null)
             return;
-        
-        CampaignTileEntry latestCampaign = null;
-        DateTime latestPlayed = DateTime.MinValue;
 
-        // Determine what campaign was played last.
-        foreach (var campaign in _campaignMenuScript._campaignEntryTiles)
+        var save_components = _mainMenu.GetComponentsInChildren<SaveLoadDialogFileEntry>();
+        Logger.LogDebug($"save_components.Length: {save_components.Length}");
+
+        var saveGamesList = _mainMenu.GetChild("SaveGamesList");
+        if (saveGamesList.transform.childCount != save_components.Length)
         {
-            var lastPlayed = DateTime.Parse(campaign.CampaignLastPlayedTime);
-
-            if (latestCampaign == null || lastPlayed > latestPlayed)
-            {
-                latestCampaign = campaign;
-                latestPlayed = lastPlayed;
-            }
+            // Haven't seen this happen, but just in case
+            Logger.LogError($"Visual ({saveGamesList.transform.childCount}) and logical {save_components.Length} save counts don't match");
+            return;
         }
 
-        if (latestCampaign != null)
+        for (var i = 0; i<saveGamesList.transform.childCount; ++i)
         {
-            // What campaign tile entry is clicked, last saved game is automatically selected
-            latestCampaign.OnCampaignClick();
-            Logger.LogInfo($"Auto loading campaign '{latestCampaign.CampaignName}'.");
+            string curr_save_name = save_components[i]._labelSaveName.text;
+            if (_loadIgnoreAutoSaves.Value && curr_save_name.StartsWith("autosave")) continue;
+            Logger.LogInfo($"Auto loading save '{curr_save_name}'.");
 
-            StartCoroutine(Load());
-            _loadInitiated = true;
+            // It's called "lastPlayed" but it's actually just "lastSelected"
+            // (this is remembered after closing the menu, but not after restarting the game)
+            save_components[i].SetCurrentToggleState(lastPlayed: true);
+
+            break;
         }
-    }
 
-    private IEnumerator Load()
-    {
-        // Wait for the next frame cause save file won't be still selected here
-        yield return null;
         _campaignMenuScript._campaignLoadMenu.LoadSelectedFile();
-        
         DestroyPlugin();
+
+        _loadInitiated = true;
     }
 
     private void DestroyPlugin()
