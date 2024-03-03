@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Configuration;
 using HarmonyLib;
 using JetBrains.Annotations;
@@ -45,7 +44,7 @@ public class SkipSplashScreenPlugin : BaseSpaceWarpPlugin
             MyPluginInfo.PLUGIN_NAME,
             "Ignore auto-saves when loading last save game",
             false,
-            "If enabled, auto-saves are ignored when automatically loading last save game");
+            "If enabled, auto-saves are ignored when automatically loading last save game.");
 
     }
 
@@ -117,15 +116,15 @@ public class SkipSplashScreenPlugin : BaseSpaceWarpPlugin
         var save_components = _mainMenu.GetComponentsInChildren<SaveLoadDialogFileEntry>();
         Logger.LogDebug($"save_components.Length: {save_components.Length}");
 
-        var sgl = _mainMenu.GetChild("SaveGamesList");
-        if (sgl.transform.childCount != save_components.Length)
+        var saveGamesList = _mainMenu.GetChild("SaveGamesList");
+        if (saveGamesList.transform.childCount != save_components.Length)
         {
             // Haven't seen this happen, but just in case
-            Logger.LogError($"Visual ({sgl.transform.childCount}) and logical {save_components.Length} save counts don't match");
+            Logger.LogError($"Visual ({saveGamesList.transform.childCount}) and logical {save_components.Length} save counts don't match");
             return;
         }
 
-        for (var i = 0; i<sgl.transform.childCount; ++i)
+        for (var i = 0; i<saveGamesList.transform.childCount; ++i)
         {
             string curr_save_name = save_components[i]._labelSaveName.text;
             if (_loadIgnoreAutoSaves.Value && curr_save_name.StartsWith("autosave")) continue;
