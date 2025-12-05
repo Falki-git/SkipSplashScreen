@@ -13,14 +13,15 @@ MonoBehaviour:
   m_Name: swinfo
   m_EditorClassIdentifier: 
   id: SkipSplashScreen
-  name: Sample Mod
-  author: nobody
-  description: A sample mod for KSP2
-  version: 0.1.0
-  versionCheck: 
-  minKsp2Version: '*'
+  name: Skip Splash Screen
+  author: Falki
+  description: Skips the splash screen and health warning. To be used only for faster
+    iteration when developing mods.
+  version: 1.3.1
+  versionCheck: TODO
+  minKsp2Version: 0.2.3
   maxKsp2Version: '*'
-  source: 
+  source: https://github.com/Falki-git/SkipSplashScreen
   allGroup: {fileID: 11400000, guid: 4d8e9aa98e7163b4fa50740e0f9a6b5d, type: 2}
   partsGroup: {fileID: 11400000, guid: 132be520fece99d4f8b39413125d7ee5, type: 2}
   missionsGroup: {fileID: 11400000, guid: 6777dd32812a85a478af241e256226c0, type: 2}
