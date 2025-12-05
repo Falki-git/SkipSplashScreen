@@ -1,10 +1,8 @@
-using System;
-using System.Collections.Generic;
+using System.Reflection;
 using HarmonyLib;
 using JetBrains.Annotations;
 using KSP.Game;
 using KSP.Game.Flow;
-using KSP.Modules;
 using PatchManager.Core.Flow;
 using Redux.ExtraModTypes;
 using ReduxLib.Configuration;
@@ -12,7 +10,6 @@ using UnityEngine;
 
 namespace SkipSplashScreen
 {
-    /* Extend KerbalMod instead if you need the MonoBehaviour update loop/references to game stuff like SW 1.x mods */
     [HarmonyPatch]
     public class SkipSplashScreenPlugin : KerbalMod
     {
@@ -31,21 +28,6 @@ namespace SkipSplashScreen
         private ConfigValue<bool> _loadLastSavedCampaign;
         private ConfigValue<bool> _loadIgnoreAutoSaves;
 
-        public override void OnPreInitialized()
-        {
-            SWLogger.LogInfo("Skip Splash Screen PreInitialized");
-        } 
-
-        public override void OnInitialized()
-        {
-            SWLogger.LogInfo("Hello World!");
-        }
-
-        public override void OnPostInitialized()
-        {
-            SWLogger.LogInfo("anchor2 OnPostInitialized");
-        }
-
         public void Start()
         {
             Instance = this;
@@ -55,13 +37,13 @@ namespace SkipSplashScreen
             _loadLastSavedCampaign = new (SWConfiguration.Bind(
                 ModName, 
                 "Auto load last played campaign", 
-                false, 
+                false,
                 "Automatically loads the last save game file after main menu is finished loading."));
             
             _loadIgnoreAutoSaves = new (SWConfiguration.Bind(
                 ModName, 
                 "Ignore auto-saves when loading last save game", 
-                false, 
+                false,
                 "If enabled, auto-saves are ignored when automatically loading last save game."));
         }
 
@@ -98,15 +80,17 @@ namespace SkipSplashScreen
         [HarmonyPatch(typeof(FlowManager), "AddActionsToFlow"), HarmonyPrefix]
         private static bool FlowManager_AddActionsToFlow(SequentialFlow loadingFlow)
         {
-            var removeCount = loadingFlow.FlowActions.RemoveAll(action => action.Name == "Creating Splash Screens Prefab");
+            var actionToSkip = "Creating Splash Screens Prefab";
+            
+            var removeCount = loadingFlow.FlowActions.RemoveAll(action => action.Name == actionToSkip);
 
             if (removeCount > 0)
             {
-                Instance.SWLogger.LogInfo("'Creating Splash Screens Prefab' successfully removed from FlowActions.");
+                Instance.SWLogger.LogInfo($"'{actionToSkip}' successfully removed from FlowActions.");
             }
             else
             {
-                Instance.SWLogger.LogInfo("'Creating Splash Screens Prefab' not found in FlowActions.");
+                Instance.SWLogger.LogInfo($"'{actionToSkip}' not found in FlowActions.");
             }
             
             GameManager.Instance.HasPhotosensitivityWarningBeenShown = true;
@@ -149,15 +133,35 @@ namespace SkipSplashScreen
 
             for (var i = 0; i < saveGamesList.transform.childCount; ++i)
             {
-                /*
-                string curr_save_name = save_components[i]._labelSaveName.text;
-                if (_loadIgnoreAutoSaves.Value && curr_save_name.StartsWith("autosave")) continue;
-                SWLogger.LogInfo($"Auto loading save '{curr_save_name}'.");
+                //var currentSaveName = save_components[i]._labelSaveName.text;
+                FieldInfo labelField = save_components[i].GetType().GetField("_labelSaveName", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+                if (labelField == null)
+                {
+                    SWLogger.LogError($"No field '_labelSaveName' found in save_components[{i}]. Skipping.");
+                    continue;
+                }
+
+                var label = labelField.GetValue(save_components[i]);
+                PropertyInfo labelTextField = label.GetType().GetProperty("text");
+                if (labelTextField == null)
+                {
+                    SWLogger.LogError($"No property 'text' found in save_components[{i}]._labelSaveName. Skipping.");
+                    continue;
+                }
+
+                var currentSaveName = labelTextField.GetValue(label) as string;
+
+                if (_loadIgnoreAutoSaves.Value && currentSaveName.ToLowerInvariant().StartsWith("autosave"))
+                {
+                    SWLogger.LogInfo($"'Ignore auto-saves' is enabled. Skipping '{currentSaveName}'.");
+                    continue;
+                }
+                
+                SWLogger.LogInfo($"Auto loading save '{currentSaveName}'.");
 
                 // It's called "lastPlayed" but it's actually just "lastSelected"
                 // (this is remembered after closing the menu, but not after restarting the game)
                 save_components[i].SetCurrentToggleState(lastPlayed: true);
-                */
 
                 break;
             }
