@@ -1,0 +1,102 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-7944876336579436128
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a089732392b94873b7dffb12543079c3, type: 3}
+  m_Name: TextAssets
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - D:\SteamLibrary\steamapps\common\Kerbal Space Program 2 Redux/mods/__Testing/SkipSplashScreen
+  possibleFolders:
+  - Assets\SkipSplashScreen
+--- !u!114 &-6722538469187696379
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 470dbf1cc5834ffc97c653aa1126938c, type: 3}
+  m_Name: CopyFolderDatum
+  m_EditorClassIdentifier: 
+  StagingPaths: []
+  sourcePath: Assets\SkipSplashScreen/Copied
+  destinationPath: D:\SteamLibrary\steamapps\common\Kerbal Space Program 2 Redux/mods/__Testing/SkipSplashScreen
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e563561e08b6a3642a487177f5cfbb37, type: 3}
+  m_Name: Build for Player Manifest
+  m_EditorClassIdentifier: 
+  Data:
+  - {fileID: -6722538469187696379}
+  - {fileID: -7944876336579436128}
+  - {fileID: 3525037313338575572}
+  - {fileID: 7603387824112446450}
+  identity: {fileID: 2209188716771535428}
+  QuickAccess: 0
+--- !u!114 &2209188716771535428
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f22bb7fd1d3b56a48bc52f8e407901d6, type: 3}
+  m_Name: SkipSplashScreen - Editor
+  m_EditorClassIdentifier: 
+  StagingPaths: []
+  Author: nobody
+  Name: 
+  Description: A sample mod for KSP2
+  Version: 0.1.0
+  Dependencies: []
+--- !u!114 &3525037313338575572
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 83ea0a28af7349aa972a4bcb474b48d7, type: 3}
+  m_Name: AddressablesGroupDatum
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - D:\SteamLibrary\steamapps\common\Kerbal Space Program 2 Redux/mods/__Testing/SkipSplashScreen/addressables
+  mod: {fileID: 11400000, guid: e71d7da3bbf0ab34eb853269c4c0f377, type: 2}
+  targetFolder: D:\SteamLibrary\steamapps\common\Kerbal Space Program 2 Redux/mods/__Testing/SkipSplashScreen/addressables
+--- !u!114 &7603387824112446450
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b7e13dda513544419a89926bd12ad8a, type: 3}
+  m_Name: AssemblyDefinitions
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - D:\SteamLibrary\steamapps\common\Kerbal Space Program 2 Redux/mods/__Testing/SkipSplashScreen
+  definitions:
+  - {fileID: 5897886265953266890, guid: d6b03150ccf68f54bbf35db8ad277b74, type: 3}
