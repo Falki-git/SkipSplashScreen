@@ -16,6 +16,7 @@ MonoBehaviour:
   m_currentHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000
+  m_ExtractTypeTreeData: 0
   m_OptimizeCatalogSize: 0
   m_BuildRemoteCatalog: 0
   m_BundleLocalCatalog: 0
@@ -114,4 +115,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a29fcadb627f57a4082a815f62c5a5fc, type: 2}
   - {fileID: 11400000, guid: fa7d5ded347f49b4bad7973e3bd017b9, type: 2}
   - {fileID: 11400000, guid: a94fca6bf38bb5047acf7c661dd3d35e, type: 2}
-  m_ActiveProfileId: 1bae16e9d3c8fc34da89f9a01915c3b3
+  m_ActiveProfileId: 8eee4564ee01f434ea4136f921ac6dcc
