@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(ilspycmd:*)",
+      "Bash(dotnet build:*)",
+      "Bash(dotnet --version)",
+      "Bash(dotnet tool list:*)",
+      "Bash(git status)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(git add:*)",
+      "Bash(git init)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(wc:*)",
+      "Bash(head:*)",
+      "Bash(tail:*)",
+      "Bash(sed:*)",
+      "PowerShell(Get-ChildItem:*)",
+      "PowerShell(Get-Content:*)",
+      "PowerShell(dotnet build:*)"
+    ],
+    "deny": [
+      "Read(Packages/KSP2_x64/**)",
+      "Read(Library/**)",
+      "Read(Temp/**)",
+      "Read(obj/**)",
+      "Read(pm_cache/**)",
+      "Read(ThunderKit/**)",
+      "Read(Redux/Addressables/**)",
+      "Read(Assets/StreamingAssets/**)"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(git commit:*)",
+	  "Bash(gh pr create*)",
+      "Bash(rm:*)",
+      "PowerShell(Remove-Item:*)"
+    ]
+  }
+}
