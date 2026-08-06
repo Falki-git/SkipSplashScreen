@@ -28,6 +28,14 @@ namespace SkipSplashScreen
         private ConfigValue<bool> _loadLastSavedCampaign;
         private ConfigValue<bool> _loadIgnoreAutoSaves;
 
+        // CampaignMenu keeps these private in the shipped assembly, so reach them via reflection.
+        private static readonly FieldInfo CampaignScrollViewContentField = typeof(CampaignMenu).GetField(
+            "_campaignScrollViewContentLastPlayedDate", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+        private static readonly FieldInfo CampaignLoadMenuField = typeof(CampaignMenu).GetField(
+            "_campaignLoadMenu", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+        private static readonly MethodInfo FillCampaignScrollViewMethod = typeof(CampaignMenu).GetMethod(
+            "FillCampaignScrollView", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+
         public void Start()
         {
             Instance = this;
@@ -107,17 +115,40 @@ namespace SkipSplashScreen
             var campaignMenu = _mainMenu.GetChild("CampaignMenu");
             _campaignMenuScript = campaignMenu.GetComponent<CampaignMenu>();
 
+            if (FillCampaignScrollViewMethod == null || CampaignScrollViewContentField == null)
+            {
+                SWLogger.LogError("Couldn't find 'FillCampaignScrollView' and/or '_campaignScrollViewContentLastPlayedDate' on CampaignMenu. Auto load aborted.");
+                DestroyPlugin();
+                return;
+            }
+
             var campaignSavesList = _campaignMenuScript.Game.SaveLoadManager.GetCampaignSaveFiles(CampaignType.SinglePlayer);
-            _campaignMenuScript.FillCampaignScrollView(campaignSavesList, _campaignMenuScript._campaignScrollViewContentLastPlayedDate);
+            var scrollViewContent = CampaignScrollViewContentField.GetValue(_campaignMenuScript);
+            FillCampaignScrollViewMethod.Invoke(_campaignMenuScript, new object[] { campaignSavesList, scrollViewContent });
 
             _singlePlayerMenuTriggered = true;
         }
 
         private void LoadLastSinglePlayerGame()
         {
+            if (CampaignLoadMenuField == null)
+            {
+                SWLogger.LogError("Couldn't find '_campaignLoadMenu' on CampaignMenu. Auto load aborted.");
+                DestroyPlugin();
+                return;
+            }
+
+            var campaignLoadMenu = CampaignLoadMenuField.GetValue(_campaignMenuScript) as CampaignLoadMenu;
+            if (campaignLoadMenu == null)
+            {
+                SWLogger.LogError("'_campaignLoadMenu' on CampaignMenu is null. Auto load aborted.");
+                DestroyPlugin();
+                return;
+            }
+
             // Wait for all the saves to load and get displayed
             // In 0.2.1 the first save of the first campaign is auto-selected when opening the menu
-            if (_campaignMenuScript._campaignLoadMenu.CurrentSelectedFilePath is null)
+            if (campaignLoadMenu.CurrentSelectedFilePath is null)
                 return;
 
             var save_components = _mainMenu.GetComponentsInChildren<SaveLoadDialogFileEntry>();
@@ -166,7 +197,7 @@ namespace SkipSplashScreen
                 break;
             }
 
-            _campaignMenuScript._campaignLoadMenu.LoadSelectedFile();
+            campaignLoadMenu.LoadSelectedFile();
             DestroyPlugin();
 
             _loadInitiated = true;

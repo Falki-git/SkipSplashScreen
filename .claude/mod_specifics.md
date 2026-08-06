@@ -95,18 +95,26 @@ stops working:
 - `GameManager.Instance.HasPhotosensitivityWarningBeenShown`.
 - The hardcoded main-menu `GameObject.Find` path, and the `"CampaignMenu"` / `"SaveGamesList"`
   child names.
-- `KSP.Game.CampaignMenu`: `FillCampaignScrollView`, `_campaignScrollViewContentLastPlayedDate`,
-  `_campaignLoadMenu` — **all `private` in the shipped assembly** (verified by decompiling
-  `Packages/KSP2_x64/Assembly-CSharp.dll`). `CampaignMenu.Game` is public (inherited from
-  `KerbalMonoBehaviour`), as is `CampaignLoadMenu.LoadSelectedFile`.
+- `KSP.Game.CampaignMenu`: `FillCampaignScrollView(List<List<SaveFileInfo>>, GameObject)`,
+  `_campaignScrollViewContentLastPlayedDate`, `_campaignLoadMenu` — **all `private` in the
+  shipped assembly** (verified by decompiling `Packages/KSP2_x64/Assembly-CSharp.dll`), so all
+  three are reached through the cached `static readonly` `FieldInfo`/`MethodInfo` at the top of
+  the plugin. `CampaignMenu.Game` is public (inherited from `KerbalMonoBehaviour`), as is
+  `CampaignLoadMenu.CurrentSelectedFilePath` / `LoadSelectedFile`.
 - `KSP.Game.SaveLoadDialogFileEntry`: `SetCurrentToggleState` is public; `_labelSaveName` is
-  private and is **already** read via reflection (with graceful `LogError` + `continue` on miss).
+  private and is read via reflection (with graceful `LogError` + `continue` on miss).
 
-> ⚠️ **Known blocker.** The checked-in `Assembly-CSharp.dll` is *not* publicized, yet the
-> auto-load path still references those three private `CampaignMenu` members directly. Per
-> `CLAUDE.md` the publicizer is broken and must not be run, so a fresh compile of this file will
-> fail on them — they need converting to reflection, the same way `_labelSaveName` already was.
-> The last known-good build (see `redux.log`, 2025-12-06) predates this state.
+> ⚠️ **The save list is virtualized as of this Redux version.** `CampaignLoadMenu` now drives
+> the rows through a `VirtualizedSaveFileList` + `GameObjectPool<SaveLoadDialogFileEntry>`
+> (`PopulateSaveList` → `_virtualizedList.SetItems/ScrollToIndex`), so only *resident* rows exist
+> as live GameObjects. `LoadLastSinglePlayerGame()` still assumes one `SaveLoadDialogFileEntry`
+> per child of `SaveGamesList` and bails with a "Visual and logical save counts don't match"
+> error when they differ — that assumption is untested against the virtualized list and is the
+> most likely runtime failure of the auto-load path.
+>
+> Mitigating detail: `PopulateSaveList` already sets `CurrentSelectedFilePath` to the last-played
+> save, so with `Ignore auto-saves` **off** a bare `LoadSelectedFile()` would do the job without
+> walking the entries at all. The walk only matters when auto-saves must be skipped.
 
 ## Logging
 
@@ -182,6 +190,9 @@ What the migration changed:
   `PatchManager.Core.Flow.FlowManager.AddActionsToFlow` (veto → post-hoc removal).
 - `MyPluginInfo.*` generated constants → hand-written `ModGuid`/`ModName`/`ModVer` consts.
 - swinfo `spec` 1.3 → 2.0, new `mod_id`, `main_assembly`, SpaceWarp2 dependency, min KSP2 0.2.3.
+- Direct access to the three private `CampaignMenu` members → reflection, once the SDK moved to a
+  non-publicized `Assembly-CSharp.dll` (the four CS1061 errors seen after the Unity 6.5 / SDK
+  `26w32b` upgrade).
 - csproj/NuGet build → ThunderKit pipelines + asmdef.
 
 Runtime evidence that the port worked at least once: `redux.log` shows
