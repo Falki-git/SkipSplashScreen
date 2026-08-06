@@ -93,6 +93,11 @@ mod_list_hash.txt
 redux.log.old
 redux.log
 Deploy/
+Assets/Mods
+Packages/packages-lock.json
+ksp2.catalog
+
+
+# --- added in this project ---
 Assets/Mods/__Testing
 Assets/Mods/__Testing.meta
-Packages/packages-lock.json
