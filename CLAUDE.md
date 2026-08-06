@@ -37,7 +37,7 @@ game's reference assemblies, the ThunderKit build pipeline, and a skeleton for o
 mods. Each mod you build lives in its own folder under `Assets/` and is packaged by
 ThunderKit into a loadable mod.
 
-- **Engine:** Unity `6000.4.1f1` (Unity 6.4)
+- **Engine:** Unity `6000.5.0f1` (Unity 6.5)
 - **Modding stack:** ReduxLib (loader) → SpaceWarp2 (mod API) → your mod
 - **Build/packaging:** ThunderKit (Unity editor pipelines) — NOT a plain `dotnet build`
 
