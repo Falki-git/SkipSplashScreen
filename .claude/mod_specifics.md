@@ -163,8 +163,10 @@ Fallout that repointing cannot fix: the published **`1.3.1-beta`** pre-release (
 check is permanently broken for existing installs. Only a new release ships the corrected URL.
 The user accepted this when the remote branch was deleted.
 
-Note that **`CLAUDE.md` and `.claude/` are untracked** — they are local-only working docs, not
-committed to the public repo. Don't add them to a commit without asking.
+**`CLAUDE.md` and `.claude/` are tracked** as of PR **#8** (branch `docs/claude-project-docs`),
+having previously been local-only. The one exception is `.claude/settings.local.json`, which
+stays untracked — it holds personal permission overrides and is covered by the user's global
+gitignore. Keep it that way.
 
 ## Porting status (pre-Redux → Redux)
 
