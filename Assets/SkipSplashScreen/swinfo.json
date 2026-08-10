@@ -5,10 +5,10 @@
   "author": "Falki",
   "description": "Skips the splash screen and health warning. To be used only for faster iteration when developing mods.",
   "source": "https://github.com/Falki-git/SkipSplashScreen",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "version_check": "https://raw.githubusercontent.com/Falki-git/SkipSplashScreen/refs/heads/redux/master/Assets/SkipSplashScreen/swinfo.json",
   "ksp2_version": {
-    "min": "0.2.3",
+    "min": "0.2.9.0",
     "max": "*"
   },
   "dependencies": [
